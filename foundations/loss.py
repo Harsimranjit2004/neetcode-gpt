@@ -4,12 +4,25 @@ from numpy.typing import NDArray
 
 class Solution:
 
-    def softmax(self, z: NDArray[np.float64]) -> NDArray[np.float64]:
-        # z is a 1D NumPy array of logits
-        # Hint: subtract max(z) for numerical stability before computing exp
-        # return np.round(your_answer, 4)
+    def binary_cross_entropy(self, y_true: NDArray[np.float64], y_pred: NDArray[np.float64]) -> float:
+        # y_true: true labels (0 or 1)
+        # y_pred: predicted probabilities
+        # Hint: add a small epsilon (1e-7) to y_pred to avoid log(0)
+        # return round(your_answer, 4)
 
-        z = z - np.max(z)
-        exp_z = np.exp(z)
-        return np.round(exp_z / np.sum(exp_z), 4)
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+
+        loss = y_true * np.log(y_pred) + \
+            (1 - y_true) * np.log(1 - y_pred)
+
+        return round(-np.mean(loss), 4)
+
+    def categorical_cross_entropy(self, y_true: NDArray[np.float64], y_pred: NDArray[np.float64]) -> float:
+        # y_true: one-hot encoded true labels (shape: n_samples x n_classes)
+        # y_pred: predicted probabilities (shape: n_samples x n_classes)
+        # Hint: add a small epsilon (1e-7) to y_pred to avoid log(0)
+        y_pred = np.clip(y_pred, 1e-7, 1-1e-15)
+
+        loss = y_true * np.log(y_pred)
+        return round(-np.mean(np.sum(loss, axis=1)), 4)
 
